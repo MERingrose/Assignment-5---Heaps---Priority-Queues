@@ -156,6 +156,7 @@ public class Graph<T> implements GraphADT<T> {
         }
     }
 
+    // TODO - Notes
     @Override
     public Iterator<T> iteratorBFS(T startVertex) {
         int startIndex = getIndex(startVertex);
@@ -182,13 +183,13 @@ public class Graph<T> implements GraphADT<T> {
         return traversalOrder.iterator();
     }
 
+    // TODO - Notes
     @Override
     public Iterator<T> iteratorDFS(T startVertex) {
 
-        // TODO - this seems incorrect
         int startIndex = getIndex(startVertex);
         boolean[] visited = new boolean[numVertices];
-        List<T> traversalOrder = new ArrayList<>();
+        List<T> traversalOrder = new ArrayList<T>();
 
         dfs(startIndex, visited, traversalOrder);
 
@@ -208,15 +209,46 @@ public class Graph<T> implements GraphADT<T> {
 
     @Override
     public Iterator<T> iteratorShortestPath(T startVertex, T targetVertex) {
-        // TODO Implement iteratorShortestPath
-        throw new UnsupportedOperationException("Unimplemented method 'iteratorShortestPath'");
+
+        int startIndex = getIndex(startVertex);
+        boolean[] visited = new boolean[numVertices];
+        Queue<T> queue = new LinkedList<>();
+        List<T> traversalOrder = new ArrayList<>();
+
+        queue.offer(vertices[startIndex]);
+        visited[startIndex] = true;
+
+        while (!queue.isEmpty()) {
+            T currentVertex = queue.poll();
+            int currentIndex = getIndex(currentVertex);
+            traversalOrder.add(currentVertex);
+
+            for (int i = 0; i < numVertices; i++) {
+                if (adjMatrix[currentIndex][i] && !visited[i]) {
+                    queue.offer(vertices[i]);
+                    visited[i] = true;
+                }
+            }
+        }
+
+        return traversalOrder.iterator();
+
     }
 
+    // private void pathFinder(List<T> shortestPath, T startVertex, T targetVertex)
+    // {
+    // if (!isConnected())
+    // throw new EmptyCollectionException("Graph is not connected");
+
+    // }
+
+    // returns true if there are no vertices in the graph
     @Override
     public boolean isEmpty() {
         return numVertices == 0;
     }
 
+    // returns true if all vertices are connected by edges
     public boolean isConnected() {
         if (numVertices == 0)
             return false; // empty graph is not connected
@@ -259,8 +291,12 @@ public class Graph<T> implements GraphADT<T> {
     @Override
     public String toString() {
 
-        return iteratorDFS(vertices[0]).toString();
+        String output = " ";
 
+        for (T bs : vertices) {
+            output += " " + bs;
+        }
+
+        return output;
     }
-
 }
