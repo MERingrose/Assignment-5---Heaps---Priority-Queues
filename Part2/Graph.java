@@ -189,16 +189,16 @@ public class Graph<T> implements GraphADT<T> {
 
         int startIndex = getIndex(startVertex);
         boolean[] visited = new boolean[numVertices];
-        List<T> traversalOrder = new ArrayList<T>();
+        Stack<T> traversalOrder = new Stack<T>();
 
         dfs(startIndex, visited, traversalOrder);
 
         return traversalOrder.iterator();
     }
 
-    private void dfs(int vertexIndex, boolean[] visited, List<T> traversalOrder) {
+    private void dfs(int vertexIndex, boolean[] visited, Stack<T> traversalOrder) {
         visited[vertexIndex] = true;
-        traversalOrder.add(vertices[vertexIndex]);
+        traversalOrder.push(vertices[vertexIndex]);
 
         for (int i = 0; i < numVertices; i++) {
             if (adjMatrix[vertexIndex][i] && !visited[i]) {
@@ -207,42 +207,71 @@ public class Graph<T> implements GraphADT<T> {
         }
     }
 
+    /***
+     * iteratorShortestPath finds the shortest path between two specified vertices
+     * using Breadth First Search.
+     * returns an empty iterator if there is no path to the target vertex.
+     * 
+     * @param startVertex  the starting vertexc
+     * @param targetVertex the ending vertex
+     * @throws NoSuchElementException if either the startVertex or targetVertex are
+     *                                not valid vertices
+     * 
+     * 
+     */
     @Override
-    public Iterator<T> iteratorShortestPath(T startVertex, T targetVertex) {
+    public Iterator<T> iteratorShortestPath(T startVertex, T targetVertex) throws NoSuchElementException {
+
+        // checks if params are valid, throws exception if vertex is not found
+        if (!indexIsValid(getIndex(targetVertex)) || !indexIsValid(getIndex(startVertex))) {
+            throw new NoSuchElementException("Vertex does not exist");
+        }
 
         int startIndex = getIndex(startVertex);
         boolean[] visited = new boolean[numVertices];
         Queue<T> queue = new LinkedList<>();
         List<T> traversalOrder = new ArrayList<>();
-
+        int[] prev = new int[numVertices];
         queue.offer(vertices[startIndex]);
         visited[startIndex] = true;
+        prev[startIndex] = -1; // starting vertex has no previous
 
         while (!queue.isEmpty()) {
             T currentVertex = queue.poll();
             int currentIndex = getIndex(currentVertex);
-            traversalOrder.add(currentVertex);
+            if (currentVertex.equals(targetVertex)) {
+                break;
+            }
 
             for (int i = 0; i < numVertices; i++) {
                 if (adjMatrix[currentIndex][i] && !visited[i]) {
                     queue.offer(vertices[i]);
                     visited[i] = true;
+                    prev[i] = currentIndex;
+
                 }
+
             }
+
         }
+
+        if (!visited[getIndex(targetVertex)])
+            return Collections.emptyIterator(); // no path found
+
+        for (int vertex = getIndex(targetVertex); vertex != -1; vertex = prev[vertex]) {
+            traversalOrder.add(vertices[vertex]);
+        }
+
+        Collections.reverse(traversalOrder);
 
         return traversalOrder.iterator();
 
     }
 
-    // private void pathFinder(List<T> shortestPath, T startVertex, T targetVertex)
-    // {
-    // if (!isConnected())
-    // throw new EmptyCollectionException("Graph is not connected");
+    /**
+     * returns true if there are no vertices in the graph
+     */
 
-    // }
-
-    // returns true if there are no vertices in the graph
     @Override
     public boolean isEmpty() {
         return numVertices == 0;
@@ -250,8 +279,9 @@ public class Graph<T> implements GraphADT<T> {
 
     // returns true if all vertices are connected by edges
     public boolean isConnected() {
-        if (numVertices == 0)
-            return false; // empty graph is not connected
+        if (numVertices == 0 || modCount < numVertices - 1)
+            return false; // empty graph is not connected & cannot be connected with fewer mods than n-1
+                          // vertices
 
         // Mark all vertices as not visited.
         boolean[] visited = new boolean[numVertices];
@@ -291,10 +321,21 @@ public class Graph<T> implements GraphADT<T> {
     @Override
     public String toString() {
 
-        String output = " ";
+        String output = "Vertices: ";
 
-        for (T bs : vertices) {
-            output += " " + bs;
+        for (T vertex : vertices) {
+            output = output + vertex + ", ";
+
+        }
+
+        output = output + '\n';
+        output = output + "Edges: ";
+        for (int i = 0; i < numVertices; i++) {
+            for (int x = 0; x < numVertices; x++) {
+                if (adjMatrix[i][x]) {
+                    output = output + "(" + i + "," + x + "), ";
+                }
+            }
         }
 
         return output;

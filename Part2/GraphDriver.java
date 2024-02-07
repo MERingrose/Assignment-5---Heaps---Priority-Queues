@@ -24,7 +24,7 @@ public class GraphDriver {
         graph.addEdge(0, 5);
         graph.addEdge(2, 5);
 
-        Iterator<Integer> sp = graph.iteratorShortestPath(4, 9);
+        Iterator<Integer> sp = graph.iteratorShortestPath(4, 2);
 
         while (sp.hasNext()) {
             System.out.println(sp.next());
@@ -36,7 +36,11 @@ public class GraphDriver {
         strGraph.addVertex("Carpenter");
         strGraph.addVertex("King");
         strGraph.addVertex("Queen");
+        strGraph.addEdge("Butcher", "Candle Maker");
+        strGraph.addEdge("Butcher", "Carpenter");
+        strGraph.addEdge("Butcher", "King");
         strGraph.addEdge("Butcher", "Baker");
+        System.out.println(strGraph.isConnected());
 
         System.out.println(graph.toString());
         System.out.println(strGraph.toString());
