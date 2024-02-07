@@ -113,8 +113,17 @@ public class Graph<T> implements GraphADT<T> {
         adjMatrix = largerAdjMatrix;
     }
 
+    /**
+     * removes a vertex from the list of vertices for the graph
+     * 
+     * @param vertex the vertex to be deleted
+     * @throws NoSuchElementException if the specified vertex is not valid
+     */
     @Override
     public void removeVertex(T vertex) throws NoSuchElementException {
+        if (indexIsValid(getIndex(vertex)))
+            throw new NoSuchElementException("Provided vertex " + vertex + " is invalid.");
+
         int index = getIndex(vertex);
         for (int i = 0; i < numVertices; i++) {
             if (i != index) {
@@ -142,12 +151,23 @@ public class Graph<T> implements GraphADT<T> {
         modCount++;
     }
 
+    /**
+     * Removes an edge, if it exists, using two vertices
+     */
     @Override
     public void removeEdge(T vertex1, T vertex2) {
         removeEdge(getIndex(vertex1), getIndex(vertex2));
 
     }
 
+    /**
+     * removes the edge representation between two vertices using the index of the
+     * vertices
+     * 
+     * 
+     * @param index1 index of first vertex
+     * @param index2 index of second vertex
+     */
     public void removeEdge(int index1, int index2) {
         if (indexIsValid(index1) && indexIsValid(index2)) {
             adjMatrix[index1][index2] = false;
@@ -156,7 +176,13 @@ public class Graph<T> implements GraphADT<T> {
         }
     }
 
-    // TODO - Notes
+    /**
+     * Returns an iterator with the Breadth First Traversal of the graph
+     * 
+     * @param startVertex the starting vertex from which to perform the traversal
+     * @return an Iterator<T> with the results of the BFS
+     * 
+     */
     @Override
     public Iterator<T> iteratorBFS(T startVertex) {
         int startIndex = getIndex(startVertex);
@@ -183,9 +209,19 @@ public class Graph<T> implements GraphADT<T> {
         return traversalOrder.iterator();
     }
 
-    // TODO - Notes
+    /**
+     * traverses graph using depth first search and returns iterator.
+     * Uses recursive DFS
+     * 
+     * @param startVertex the index to start from
+     * @return returns an Iterator<T>
+     * @throws NoSuchElementException if the specified start vertex is not valid
+     * 
+     */
     @Override
-    public Iterator<T> iteratorDFS(T startVertex) {
+    public Iterator<T> iteratorDFS(T startVertex) throws NoSuchElementException {
+        if (indexIsValid(getIndex(startVertex)))
+            throw new NoSuchElementException("Vertex does not exist");
 
         int startIndex = getIndex(startVertex);
         boolean[] visited = new boolean[numVertices];
@@ -217,7 +253,7 @@ public class Graph<T> implements GraphADT<T> {
      * @throws NoSuchElementException if either the startVertex or targetVertex are
      *                                not valid vertices
      * 
-     * 
+     *
      */
     @Override
     public Iterator<T> iteratorShortestPath(T startVertex, T targetVertex) throws NoSuchElementException {
@@ -277,7 +313,12 @@ public class Graph<T> implements GraphADT<T> {
         return numVertices == 0;
     }
 
-    // returns true if all vertices are connected by edges
+    /**
+     * 
+     * Returns true if all vertices are connected by edges.
+     * Uses recursive Depth First Search
+     * 
+     */
     public boolean isConnected() {
         if (numVertices == 0 || modCount < numVertices - 1)
             return false; // empty graph is not connected & cannot be connected with fewer mods than n-1
@@ -299,6 +340,7 @@ public class Graph<T> implements GraphADT<T> {
         return true;
     }
 
+    // private DFS method for use with isConnected method
     private void dfs(int vertexIndex, boolean[] visited) {
         visited[vertexIndex] = true;
 
@@ -311,6 +353,8 @@ public class Graph<T> implements GraphADT<T> {
 
     /**
      * Returns the size of the graph as number of vertices.
+     * 
+     * @return int representing the number of vertices in the graph
      */
     @Override
     public int size() {
@@ -318,11 +362,16 @@ public class Graph<T> implements GraphADT<T> {
         return numVertices;
     }
 
+    /**
+     * Provides a string representation of all vertices and edges
+     * 
+     */
     @Override
     public String toString() {
 
         String output = "Vertices: ";
 
+        // append the string output to add values to the string
         for (T vertex : vertices) {
             output = output + vertex + ", ";
 
@@ -330,6 +379,9 @@ public class Graph<T> implements GraphADT<T> {
 
         output = output + '\n';
         output = output + "Edges: ";
+
+        // appends the string to add edges to the string representation of the graph in
+        // the form (x,y)
         for (int i = 0; i < numVertices; i++) {
             for (int x = 0; x < numVertices; x++) {
                 if (adjMatrix[i][x]) {
