@@ -121,7 +121,7 @@ public class Graph<T> implements GraphADT<T> {
      */
     @Override
     public void removeVertex(T vertex) throws NoSuchElementException {
-        if (indexIsValid(getIndex(vertex)))
+        if (!indexIsValid(getIndex(vertex)))
             throw new NoSuchElementException("Provided vertex " + vertex + " is invalid.");
 
         int index = getIndex(vertex);
@@ -220,7 +220,7 @@ public class Graph<T> implements GraphADT<T> {
      */
     @Override
     public Iterator<T> iteratorDFS(T startVertex) throws NoSuchElementException {
-        if (indexIsValid(getIndex(startVertex)))
+        if (!indexIsValid(getIndex(startVertex)))
             throw new NoSuchElementException("Vertex does not exist");
 
         int startIndex = getIndex(startVertex);
@@ -320,9 +320,8 @@ public class Graph<T> implements GraphADT<T> {
      * 
      */
     public boolean isConnected() {
-        if (numVertices == 0 || modCount < numVertices - 1)
-            return false; // empty graph is not connected & cannot be connected with fewer mods than n-1
-                          // vertices
+        if (numVertices == 0)
+            return false; // empty graph is not connected
 
         // Mark all vertices as not visited.
         boolean[] visited = new boolean[numVertices];

@@ -32,14 +32,25 @@ public class GraphDriver {
 
         strGraph.addVertex("Butcher");
         strGraph.addVertex("Baker");
-        strGraph.addVertex("Candle Maker");
+        strGraph.addVertex("Candlemaker");
         strGraph.addVertex("Carpenter");
         strGraph.addVertex("King");
         strGraph.addVertex("Queen");
-        strGraph.addEdge("Butcher", "Candle Maker");
+        strGraph.addEdge("Butcher", "Candlemaker");
         strGraph.addEdge("Butcher", "Carpenter");
         strGraph.addEdge("Butcher", "King");
         strGraph.addEdge("Butcher", "Baker");
+        strGraph.addEdge("King", "Queen");
+        strGraph.addEdge("Queen", "Baker");
+
+        System.out.println(strGraph.isConnected());
+
+        System.out.println(strGraph.toString());
+
+        strGraph.removeVertex("Candlemaker");
+        strGraph.removeEdge("Baker", "Queen");
+        strGraph.removeEdge("King", "Queen");
+
         System.out.println(strGraph.isConnected());
 
         System.out.println(graph.toString());
